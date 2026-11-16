@@ -1,0 +1,559 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Tokens
+   ============================================================ */
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+}
+
+:root,
+[data-theme="dark"] {
+  --bg: #0c0c0d;
+  --bg-2: #151517;
+  --fg: #ecebe6;
+  --fg-2: #908f8a;
+  --line: rgb(236 235 230 / 0.13);
+  --accent: #ff4d2e;
+  --sun-hi: #ffd6bd;
+  --star-opacity: 1;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: #f2f0eb;
+  --bg-2: #e8e5de;
+  --fg: #121212;
+  --fg-2: #66645f;
+  --line: rgb(18 18 18 / 0.14);
+  --accent: #e0401f;
+  --sun-hi: #ffc7a8;
+  --star-opacity: 0.45;
+  color-scheme: light;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    background: var(--bg);
+    min-height: 100svh;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+/* ============================================================
+   Componentes de texto e layout
+   ============================================================ */
+
+@layer components {
+  .page-wrap {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .page-wrap {
+      padding-inline: 2.5rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .page-wrap {
+      padding-inline: 4rem;
+    }
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-2);
+  }
+
+  .display {
+    font-size: clamp(2.6rem, 6.4vw, 5.9rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  .ulink {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+    padding-bottom: 2px;
+  }
+  .ulink:hover,
+  .ulink:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.85rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      border-color 0.3s;
+  }
+  .btn:hover {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+
+  .skip-link {
+    position: fixed;
+    left: 1rem;
+    top: 1rem;
+    z-index: 500;
+    padding: 0.6rem 1rem;
+    background: var(--fg);
+    color: var(--bg);
+    transform: translateY(-200%);
+  }
+  .skip-link:focus {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Cabeçalho (mistura por diferença: legível sobre qualquer fundo)
+   ============================================================ */
+
+.site-header {
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+.nav-link {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding-block: 0.4rem;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.nav-link:hover::after,
+.nav-link.is-active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.mobile-menu {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.6s cubic-bezier(0.7, 0, 0.2, 1);
+}
+.mobile-menu[data-open] {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ============================================================
+   Entrada de página e revelação no scroll
+   ============================================================ */
+
+/* Sem fill-mode: depois da animação o main não vira contexto de empilhamento. */
+.page-enter {
+  animation: page-in 0.6s ease-out;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 0.9s ease-out,
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================================
+   Cena da home: tudo deriva de --p (0 a 1), definido pelo scroll
+   ============================================================ */
+
+.scene {
+  position: relative;
+  height: 520vh;
+}
+
+.scene-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Camada com janela de entrada (--i0..--i1) e de saída (--o0..--o1) */
+.sc {
+  --i0: -1;
+  --i1: 0;
+  --o0: 2;
+  --o1: 3;
+  --rise: 40px;
+  --in: clamp(0, (var(--p, 0) - var(--i0)) / (var(--i1) - var(--i0)), 1);
+  --out: clamp(0, (var(--o1) - var(--p, 0)) / (var(--o1) - var(--o0)), 1);
+  opacity: min(var(--in), var(--out));
+  transform: translate3d(
+    0,
+    calc((1 - var(--in)) * var(--rise) - (1 - var(--out)) * var(--rise)),
+    0
+  );
+}
+
+.scene-system {
+  --zoom: clamp(0, var(--p, 0) / 0.22, 1);
+  --dim: min(clamp(0, (var(--p, 0) - 0.16) / 0.06, 1), clamp(0, (0.5 - var(--p, 0)) / 0.06, 1));
+  --shift: clamp(0, (var(--p, 0) - 0.44) / 0.1, 1);
+  --shift-x: 0px;
+  --shift-y: -8svh;
+  --shrink: 0.04;
+  opacity: calc(1 - 0.62 * var(--dim));
+  transform: translate3d(calc(var(--shift) * var(--shift-x)), calc(var(--shift) * var(--shift-y)), 0)
+    scale(calc(0.84 + 0.16 * var(--zoom) - var(--shift) * var(--shrink)));
+}
+/* No desktop, --shift-x e --shrink são calculados em Home.tsx a partir do espaço livre. */
+@media (min-width: 1024px) {
+  .scene-system {
+    --shift-y: 0px;
+  }
+}
+
+.scroll-line {
+  position: relative;
+  display: inline-block;
+  width: 1px;
+  height: 36px;
+  overflow: hidden;
+  background: color-mix(in oklab, currentColor 25%, transparent);
+}
+.scroll-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  animation: scroll-line 1.8s cubic-bezier(0.7, 0, 0.3, 1) infinite;
+}
+@keyframes scroll-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* ============================================================
+   Sistema solar
+   ============================================================ */
+
+.stars circle {
+  fill: var(--fg);
+}
+.stars {
+  opacity: var(--star-opacity);
+}
+.twinkle {
+  animation: twinkle 4.5s ease-in-out infinite;
+}
+@keyframes twinkle {
+  50% {
+    opacity: 0.08;
+  }
+}
+
+.orbit-ring {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: ring-draw 2s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  transition: stroke 0.4s;
+}
+.orbit-ring[data-active] {
+  stroke: color-mix(in oklab, var(--accent) 75%, transparent);
+}
+@keyframes ring-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.sun {
+  position: absolute;
+  z-index: 75;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle at 34% 30%,
+    var(--sun-hi) 0%,
+    var(--accent) 40%,
+    color-mix(in oklab, var(--accent) 50%, #200500) 100%
+  );
+  box-shadow:
+    0 0 50px 6px color-mix(in oklab, var(--accent) 40%, transparent),
+    0 0 180px 60px color-mix(in oklab, var(--accent) 13%, transparent);
+}
+.sun-mark {
+  width: 44%;
+  color: rgb(28 6 0 / 0.55);
+}
+
+.planet {
+  --d: 0.5;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  opacity: calc(0.42 + 0.58 * var(--d));
+  transition: opacity 0.4s;
+  will-change: transform;
+}
+.planet:focus-visible {
+  outline: none;
+}
+.planet:focus-visible .planet-core::after,
+.planet[data-active] .planet-core::after {
+  opacity: 1;
+  transform: scale(1);
+}
+.orbit-system[data-highlight] .planet:not([data-active]) {
+  opacity: calc((0.42 + 0.58 * var(--d)) * 0.28);
+}
+
+.planet-core {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.planet[data-active] .planet-core {
+  transform: scale(1.35);
+}
+.planet-core::after {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity 0.35s,
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.planet-body {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 28%,
+    color-mix(in oklab, var(--c) 42%, white) 0%,
+    var(--c) 46%,
+    color-mix(in oklab, var(--c) 38%, black) 100%
+  );
+  box-shadow: inset -0.22em -0.3em 0.55em rgb(0 0 0 / 0.32);
+}
+
+.planet-ring {
+  position: absolute;
+  left: -58%;
+  right: -58%;
+  top: 50%;
+  height: 34%;
+  border-radius: 50%;
+  border: 2px solid color-mix(in oklab, var(--c) 55%, var(--fg));
+  transform: translateY(-50%) rotate(-16deg);
+}
+.planet-ring-front {
+  z-index: 2;
+  clip-path: inset(50% 0 0 0);
+}
+
+.planet-label {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  display: flex;
+  gap: 0.7em;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  pointer-events: none;
+  transition:
+    color 0.3s,
+    opacity 0.3s,
+    left 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.planet:not([data-labels]) .planet-label {
+  opacity: 0;
+}
+.planet[data-active] .planet-label {
+  left: calc(135% + 14px);
+  color: var(--fg);
+  opacity: 1;
+}
+.planet-label-num {
+  color: var(--accent);
+}
+
+/* Planeta grande no painel de detalhes */
+.drawer-planet {
+  position: relative;
+  width: 84px;
+  height: 84px;
+}
+
+/* ============================================================
+   Painel lateral de detalhes
+   ============================================================ */
+
+.drawer-root {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+}
+.drawer-root[data-open] {
+  pointer-events: auto;
+}
+.drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.45);
+  opacity: 0;
+  transition: opacity 0.45s;
+}
+.drawer-root[data-open] .drawer-backdrop {
+  opacity: 1;
+}
+.drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(540px, 100%);
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+  transform: translateX(100%);
+  transition: transform 0.6s cubic-bezier(0.7, 0, 0.2, 1);
+}
+.drawer-root[data-open] .drawer-panel {
+  transform: none;
+}
+
+/* Linhas da página de trabalhos */
+.work-dot {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--c);
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.work-row:hover .work-dot {
+  transform: scale(1.6);
+}
+
+/* ============================================================
+   Movimento reduzido: estado final, sem rolagem presa
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .scene {
+    height: auto;
+  }
+  .scene-sticky {
+    position: relative;
+  }
+  .reveal {
+    transform: none;
+    transition: opacity 0.4s;
+  }
+  .page-enter,
+  .twinkle,
+  .scroll-line::after {
+    animation: none;
+  }
+  .orbit-ring {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

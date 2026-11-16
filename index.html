@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Erick Neves · Desenvolvedor Shopify</title>
+    <meta
+      name="description"
+      content="Erick Neves, desenvolvedor Shopify. Temas em Liquid, seções sob medida e integrações para lojas de marcas brasileiras."
+    />
+    <meta name="theme-color" content="#0c0c0d" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Erick Neves · Desenvolvedor Shopify" />
+    <meta
+      property="og:description"
+      content="Temas em Liquid, seções sob medida e integrações para lojas Shopify de marcas brasileiras."
+    />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Aplica tema e idioma salvos antes da primeira pintura (evita piscar).
+      try {
+        var theme = localStorage.getItem("pref-theme");
+        if (theme !== "light" && theme !== "dark") {
+          theme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+        document.documentElement.dataset.theme = theme;
+        if (localStorage.getItem("pref-lang") === "en") document.documentElement.lang = "en";
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

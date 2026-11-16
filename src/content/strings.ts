@@ -1,0 +1,293 @@
+export type Lang = "pt" | "en";
+
+const pt = {
+  meta: {
+    home: "Erick Neves · Desenvolvedor Shopify",
+    work: "Trabalhos · Erick Neves",
+    about: "Sobre · Erick Neves",
+    contact: "Contato · Erick Neves",
+    notFound: "Página não encontrada · Erick Neves",
+  },
+  nav: {
+    home: "Início",
+    work: "Trabalhos",
+    about: "Sobre",
+    contact: "Contato",
+    menu: "Menu",
+    close: "Fechar",
+    switchLang: "Switch to English",
+    toLight: "Ativar tema claro",
+    toDark: "Ativar tema escuro",
+    language: "Idioma",
+    theme: "Tema",
+    light: "Claro",
+    dark: "Escuro",
+    skip: "Pular para o conteúdo",
+    homeAria: "Erick Neves, página inicial",
+    main: "Navegação principal",
+  },
+  intro: {
+    role: "Desenvolvedor Shopify",
+    scroll: "Role para entrar",
+    eyebrow: "Erick Neves · Desenvolvedor Shopify",
+    headlineA: "Lojas Shopify,",
+    headlineB: "do primeiro commit ao lançamento.",
+    sub: "Temas em Liquid, seções sob medida e integrações para marcas brasileiras.",
+  },
+  orbit: {
+    label: "Em órbita",
+    title: "Lojas em que trabalhei",
+    hint: "Clique em um planeta para ver os detalhes.",
+    hintTouch: "Toque em um planeta para ver os detalhes.",
+    open: "Ver detalhes",
+    all: "Ver todos os trabalhos",
+  },
+  home: {
+    servicesLabel: "O que eu faço",
+    services: [
+      {
+        title: "Lojas do zero ao ar",
+        text: "Tema, coleções, páginas e configurações até a publicação.",
+      },
+      {
+        title: "Temas e seções em Liquid",
+        text: "Seções e blocos configuráveis no editor de temas, para o time da marca editar sem abrir código.",
+      },
+      {
+        title: "Integrações",
+        text: "Storefront API, apps, meios de pagamento e logística conectados à loja.",
+      },
+      {
+        title: "Performance e SEO técnico",
+        text: "Menos peso no carregamento, scripts de terceiros sob controle e marcação correta para buscadores.",
+      },
+    ],
+    aboutLabel: "Sobre",
+    aboutText:
+      "Sou o Erick. Escrevo o código das lojas: a vitrine que o cliente vê e as seções que o time da marca edita no painel.",
+    aboutLink: "Mais sobre mim",
+    ctaLabel: "Contato",
+    ctaTitle: "Tem uma loja Shopify para tirar do papel ou melhorar?",
+    ctaAlt: "Prefere conversar pelo WhatsApp?",
+    ctaAltLink: "Chamar no WhatsApp",
+  },
+  work: {
+    label: "Trabalhos",
+    heading: "Lojas em que trabalhei",
+    intro:
+      "Lojas Shopify de marcas brasileiras de suplementos, instrumentos musicais, calçados e colecionáveis.",
+    cols: { store: "Loja", segment: "Segmento", platform: "Plataforma" },
+    details: "Detalhes",
+    personalLabel: "Projetos pessoais",
+    personalIntro: "Projetos de estudo fora do e-commerce.",
+    source: "Código",
+  },
+  drawer: {
+    close: "Fechar",
+    segment: "Segmento",
+    platform: "Plataforma",
+    site: "Site",
+    visit: "Visitar loja",
+    scope: "O que fiz",
+    prev: "Anterior",
+    next: "Próxima",
+  },
+  about: {
+    label: "Sobre",
+    heading: "Front-end para e-commerce, com foco em Shopify.",
+    bio: [
+      "Trabalho no front-end de lojas Shopify. Desenvolvo temas em Liquid, crio seções que o time da marca edita pelo painel e conecto a loja a apps e APIs.",
+      "Estudo Desenvolvimento de Software na FATEC Marília. Antes do e-commerce passei por PHP, Java e MySQL em projetos próprios, e essa base ajuda bastante a entender o que acontece do outro lado da API.",
+      "Prefiro entregas pequenas e frequentes, com versionamento organizado desde o primeiro commit.",
+    ],
+    stackLabel: "Stack",
+    stack: [
+      {
+        title: "Shopify",
+        items: ["Liquid", "Desenvolvimento de temas", "Storefront API (GraphQL)", "Apps e integrações"],
+      },
+      {
+        title: "Front-end",
+        items: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Tailwind CSS"],
+      },
+      { title: "Back-end e dados", items: ["PHP", "MySQL", "Java"] },
+      { title: "Estudando agora", items: ["Hydrogen", "Node.js", "Python", "MongoDB"] },
+    ],
+    timelineLabel: "Trajetória",
+    timeline: [
+      { when: "Atual", title: "Desenvolvedor Shopify", place: "Lojas de marcas brasileiras" },
+      { when: "Em curso", title: "Desenvolvimento de Software", place: "FATEC Marília" },
+    ],
+    cv: "Baixar currículo",
+    portraitAlt: "Retrato de Erick Neves",
+  },
+  contact: {
+    label: "Contato",
+    heading: "Vamos falar sobre a sua loja.",
+    intro: "Respondo por e-mail, WhatsApp ou LinkedIn.",
+    copy: "Copiar e-mail",
+    copied: "E-mail copiado",
+    channelsLabel: "Outros canais",
+    channels: {
+      whatsapp: "Enviar mensagem",
+      linkedin: "Ver perfil",
+      github: "Ver repositórios",
+    },
+    baseLabel: "Base",
+    statusLabel: "Status",
+    status: "Aberto a oportunidades",
+  },
+  notFound: {
+    title: "Esta página saiu de órbita.",
+    text: "O endereço não existe ou mudou de lugar.",
+    back: "Voltar para o início",
+  },
+};
+
+export type Strings = typeof pt;
+
+const en: Strings = {
+  meta: {
+    home: "Erick Neves · Shopify Developer",
+    work: "Work · Erick Neves",
+    about: "About · Erick Neves",
+    contact: "Contact · Erick Neves",
+    notFound: "Page not found · Erick Neves",
+  },
+  nav: {
+    home: "Home",
+    work: "Work",
+    about: "About",
+    contact: "Contact",
+    menu: "Menu",
+    close: "Close",
+    switchLang: "Mudar para português",
+    toLight: "Switch to light theme",
+    toDark: "Switch to dark theme",
+    language: "Language",
+    theme: "Theme",
+    light: "Light",
+    dark: "Dark",
+    skip: "Skip to content",
+    homeAria: "Erick Neves, home page",
+    main: "Main navigation",
+  },
+  intro: {
+    role: "Shopify Developer",
+    scroll: "Scroll to enter",
+    eyebrow: "Erick Neves · Shopify Developer",
+    headlineA: "Shopify stores,",
+    headlineB: "from first commit to launch.",
+    sub: "Liquid themes, custom sections and integrations for Brazilian brands.",
+  },
+  orbit: {
+    label: "In orbit",
+    title: "Stores I've worked on",
+    hint: "Click a planet to see the details.",
+    hintTouch: "Tap a planet to see the details.",
+    open: "See details",
+    all: "See all work",
+  },
+  home: {
+    servicesLabel: "What I do",
+    services: [
+      {
+        title: "Stores from zero to live",
+        text: "Theme, collections, pages and settings, all the way to launch.",
+      },
+      {
+        title: "Liquid themes and sections",
+        text: "Sections and blocks configurable in the theme editor, so the brand team can edit without touching code.",
+      },
+      {
+        title: "Integrations",
+        text: "Storefront API, apps, payment and logistics wired into the store.",
+      },
+      {
+        title: "Performance and technical SEO",
+        text: "Lighter page loads, third-party scripts under control and correct markup for search engines.",
+      },
+    ],
+    aboutLabel: "About",
+    aboutText:
+      "I'm Erick. I write the code behind the stores: the storefront shoppers see and the sections the brand team edits in the admin.",
+    aboutLink: "More about me",
+    ctaLabel: "Contact",
+    ctaTitle: "Have a Shopify store to launch or improve?",
+    ctaAlt: "Rather talk on WhatsApp?",
+    ctaAltLink: "Message me on WhatsApp",
+  },
+  work: {
+    label: "Work",
+    heading: "Stores I've worked on",
+    intro:
+      "Shopify stores for Brazilian brands in supplements, musical instruments, footwear and collectibles.",
+    cols: { store: "Store", segment: "Segment", platform: "Platform" },
+    details: "Details",
+    personalLabel: "Personal projects",
+    personalIntro: "Study projects outside e-commerce.",
+    source: "Code",
+  },
+  drawer: {
+    close: "Close",
+    segment: "Segment",
+    platform: "Platform",
+    site: "Website",
+    visit: "Visit store",
+    scope: "What I did",
+    prev: "Previous",
+    next: "Next",
+  },
+  about: {
+    label: "About",
+    heading: "E-commerce front-end, focused on Shopify.",
+    bio: [
+      "I work on the front-end of Shopify stores. I build Liquid themes, create sections the brand team edits from the admin and connect the store to apps and APIs.",
+      "I study Software Development at FATEC Marília. Before e-commerce I worked with PHP, Java and MySQL on my own projects, and that background helps a lot when I need to understand what happens on the other side of an API.",
+      "I prefer small, frequent deliveries, with clean version control from the first commit.",
+    ],
+    stackLabel: "Stack",
+    stack: [
+      {
+        title: "Shopify",
+        items: ["Liquid", "Theme development", "Storefront API (GraphQL)", "Apps and integrations"],
+      },
+      {
+        title: "Front-end",
+        items: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Tailwind CSS"],
+      },
+      { title: "Back-end and data", items: ["PHP", "MySQL", "Java"] },
+      { title: "Currently learning", items: ["Hydrogen", "Node.js", "Python", "MongoDB"] },
+    ],
+    timelineLabel: "Path",
+    timeline: [
+      { when: "Now", title: "Shopify Developer", place: "Stores for Brazilian brands" },
+      { when: "Ongoing", title: "Software Development", place: "FATEC Marília" },
+    ],
+    cv: "Download résumé",
+    portraitAlt: "Portrait of Erick Neves",
+  },
+  contact: {
+    label: "Contact",
+    heading: "Let's talk about your store.",
+    intro: "I reply by email, WhatsApp or LinkedIn.",
+    copy: "Copy email",
+    copied: "Email copied",
+    channelsLabel: "Other channels",
+    channels: {
+      whatsapp: "Send a message",
+      linkedin: "View profile",
+      github: "View repositories",
+    },
+    baseLabel: "Based in",
+    statusLabel: "Status",
+    status: "Open to opportunities",
+  },
+  notFound: {
+    title: "This page drifted out of orbit.",
+    text: "The address doesn't exist or has moved.",
+    back: "Back to home",
+  },
+};
+
+export const strings: Record<Lang, Strings> = { pt, en };
