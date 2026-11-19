@@ -26,6 +26,8 @@
   --accent: #ff4d2e;
   --sun-hi: #ffd6bd;
   --star-opacity: 1;
+  /* Logos em silhueta na cor do texto */
+  --logo-filter: brightness(0) invert(0.93);
   color-scheme: dark;
 }
 
@@ -37,7 +39,8 @@
   --line: rgb(18 18 18 / 0.14);
   --accent: #e0401f;
   --sun-hi: #ffc7a8;
-  --star-opacity: 0.45;
+  --star-opacity: 0.95;
+  --logo-filter: brightness(0) invert(0.07);
   color-scheme: light;
 }
 
@@ -238,7 +241,8 @@
 
 .scene {
   position: relative;
-  height: 520vh;
+  /* --scroll-vh e os tempos --t-* vêm de Home.tsx */
+  height: calc((var(--scroll-vh, 355) + 100) * 1vh);
 }
 
 .scene-sticky {
@@ -268,9 +272,12 @@
 }
 
 .scene-system {
-  --zoom: clamp(0, var(--p, 0) / 0.22, 1);
-  --dim: min(clamp(0, (var(--p, 0) - 0.16) / 0.06, 1), clamp(0, (0.5 - var(--p, 0)) / 0.06, 1));
-  --shift: clamp(0, (var(--p, 0) - 0.44) / 0.1, 1);
+  --zoom: clamp(0, var(--p, 0) / var(--t-mask), 1);
+  --dim: min(
+    clamp(0, (var(--p, 0) - var(--t-dim0)) / (var(--t-dim1) - var(--t-dim0)), 1),
+    clamp(0, (var(--t-undim1) - var(--p, 0)) / (var(--t-undim1) - var(--t-undim0)), 1)
+  );
+  --shift: clamp(0, (var(--p, 0) - var(--t-shift0)) / (var(--t-shift1) - var(--t-shift0)), 1);
   --shift-x: 0px;
   --shift-y: -8svh;
   --shrink: 0.04;
@@ -347,13 +354,63 @@
   }
 }
 
+/* Estrelas cadentes: atravessam na diagonal e somem */
+.shooting-star {
+  position: absolute;
+  width: var(--len);
+  height: 1.5px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--fg));
+  rotate: var(--angle);
+  opacity: 0;
+  animation-name: shoot;
+  animation-timing-function: cubic-bezier(0.3, 0, 0.7, 1);
+  animation-fill-mode: forwards;
+}
+@keyframes shoot {
+  0% {
+    opacity: 0;
+    transform: translateX(-120px);
+  }
+  15%,
+  65% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(320px);
+  }
+}
+
+/* ---------- Sol, que vira buraco negro com um clique ---------- */
+
+@property --swirl {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 .sun {
   position: absolute;
   z-index: 75;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.sun:focus-visible {
+  outline: none;
+}
+.sun:focus-visible .sun-disk {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+}
+
+.sun-disk {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  transform: translate(-50%, -50%);
   background: radial-gradient(
     circle at 34% 30%,
     var(--sun-hi) 0%,
@@ -363,10 +420,125 @@
   box-shadow:
     0 0 50px 6px color-mix(in oklab, var(--accent) 40%, transparent),
     0 0 180px 60px color-mix(in oklab, var(--accent) 13%, transparent);
+  transition:
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.9s;
+}
+.sun-disk::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #030303;
+  opacity: 0;
+  transition: opacity 0.8s;
+}
+.sun:hover .sun-disk {
+  transform: scale(1.06);
 }
 .sun-mark {
+  position: relative;
+  z-index: 1;
   width: 44%;
   color: rgb(28 6 0 / 0.55);
+  transition:
+    opacity 0.5s,
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Disco de acreção: faixa elíptica que gira em volta do buraco negro */
+.sun-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: 310%;
+  height: 64%;
+  border-radius: 50%;
+  translate: -50% -50%;
+  rotate: -14deg;
+  background: conic-gradient(
+    from var(--swirl),
+    #ffc49a,
+    var(--accent) 22%,
+    rgb(255 77 46 / 0.12) 42%,
+    #ffe2cc 58%,
+    var(--accent) 78%,
+    #ffc49a
+  );
+  -webkit-mask: radial-gradient(closest-side, transparent 60%, #000 68%, #000 84%, transparent 100%);
+  mask: radial-gradient(closest-side, transparent 60%, #000 68%, #000 84%, transparent 100%);
+  opacity: 0;
+  transform: scale(0.35);
+  transition:
+    opacity 0.8s,
+    transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation: swirl 4.5s linear infinite;
+  pointer-events: none;
+}
+.sun-ring-front {
+  z-index: 2;
+  clip-path: inset(50% 0 0 0);
+}
+@keyframes swirl {
+  to {
+    --swirl: 360deg;
+  }
+}
+
+.sun[data-hole] .sun-disk {
+  transform: scale(0.8);
+  box-shadow:
+    0 0 0 1.5px rgb(255 220 196 / 0.9),
+    0 0 22px 6px color-mix(in oklab, var(--accent) 60%, transparent),
+    0 0 110px 36px color-mix(in oklab, var(--accent) 16%, transparent);
+}
+.sun[data-hole]:hover .sun-disk {
+  transform: scale(0.86);
+}
+.sun[data-hole] .sun-disk::after {
+  opacity: 1;
+}
+.sun[data-hole] .sun-mark {
+  opacity: 0;
+  transform: scale(0.2) rotate(120deg);
+}
+.sun[data-hole] .sun-ring {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.sun-caption {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 18px);
+  translate: -50% 0;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.sun:hover .sun-caption,
+.sun:focus-visible .sun-caption,
+.sun[data-hole] .sun-caption {
+  opacity: 1;
+}
+.sun[data-hole] .sun-caption {
+  top: calc(100% + 34px);
+}
+@media (max-width: 640px) {
+  .sun-caption {
+    width: 9em;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+.orbit-rings {
+  transition: opacity 0.6s;
+}
+.orbit-system[data-hole] .orbit-rings {
+  opacity: 0.18;
 }
 
 .planet {
@@ -473,11 +645,179 @@
   color: var(--accent);
 }
 
-/* Planeta grande no painel de detalhes */
-.drawer-planet {
+/* Logo da marca dentro do planeta, sempre em silhueta branca */
+.planet-logo {
+  position: absolute;
+  left: 14%;
+  top: 14%;
+  z-index: 2;
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
+  filter: brightness(0) invert(1) drop-shadow(0 1px 1px rgb(0 0 0 / 0.25));
+  pointer-events: none;
+  user-select: none;
+}
+/* Selos que perdem a leitura em silhueta ficam nas cores originais */
+.planet-logo.is-original,
+.planet-card-logo img.is-original,
+.logo-mono.is-original {
+  filter: none;
+}
+.planet-mono {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+}
+.planet-ring-front {
+  z-index: 3;
+}
+
+/* Cartão de preview que aparece no modo buraco negro */
+.planet-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--card-w);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.9rem 0.5rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--bg) 86%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  translate: -50% -50%;
+  opacity: 0;
+  transform: scale(0.3);
+  pointer-events: none;
+  transition:
+    opacity 0.4s,
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 0.3s;
+}
+.planet-card-logo {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: calc(var(--card-w) * 0.38);
+}
+.planet-card-logo img {
+  max-width: 82%;
+  max-height: calc(var(--card-w) * 0.38);
+  object-fit: contain;
+  filter: var(--logo-filter);
+}
+/* Sem logo: mini planeta com as iniciais */
+.planet-card-mono {
   position: relative;
-  width: 84px;
-  height: 84px;
+  width: calc(var(--card-w) * 0.34);
+  height: calc(var(--card-w) * 0.34);
+}
+.planet-card-name {
+  max-width: 100%;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.planet-card-meta {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+.orbit-system[data-hole] .planet {
+  opacity: 1;
+}
+.orbit-system[data-hole][data-highlight] .planet:not([data-active]) {
+  opacity: 0.45;
+}
+.orbit-system[data-hole] .planet-core {
+  opacity: 0;
+  transform: scale(0.2);
+  transition:
+    opacity 0.3s,
+    transform 0.5s;
+}
+.orbit-system[data-hole] .planet-core::after,
+.orbit-system[data-hole] .planet-label {
+  opacity: 0;
+}
+.orbit-system[data-hole] .planet-card {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  transition-delay: calc(var(--i) * 45ms), calc(var(--i) * 45ms), 0s;
+}
+.orbit-system[data-hole] .planet[data-active] .planet-card {
+  border-color: var(--accent);
+}
+
+/* Banner da marca no painel de detalhes */
+.brand-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1.91 / 1;
+  overflow: hidden;
+  border-radius: 10px;
+  background:
+    radial-gradient(120% 90% at 30% 20%, color-mix(in oklab, var(--c) 70%, white) 0%, transparent 60%),
+    linear-gradient(160deg, var(--c), color-mix(in oklab, var(--c) 45%, black));
+}
+.brand-banner-glow {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgb(255 255 255 / 0.5) 0.6px, transparent 1px);
+  background-size: 22px 22px;
+  opacity: 0.25;
+  mask: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+.brand-banner-logo {
+  position: relative;
+  max-width: 62%;
+  max-height: 34%;
+  object-fit: contain;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 6px rgb(0 0 0 / 0.2));
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.brand-banner-logo.is-original {
+  max-height: 46%;
+  filter: drop-shadow(0 4px 14px rgb(0 0 0 / 0.25));
+}
+.brand-banner:hover .brand-banner-logo {
+  transform: scale(1.04);
+}
+.brand-banner-mono {
+  position: relative;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+.brand-banner-cta {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  color: rgb(255 255 255 / 0.85) !important;
+  transition: color 0.3s;
+}
+.brand-banner:hover .brand-banner-cta {
+  color: #fff !important;
 }
 
 /* ============================================================
@@ -520,16 +860,776 @@
   transform: none;
 }
 
-/* Linhas da página de trabalhos */
-.work-dot {
+/* Ícones de contato (página Sobre) */
+.social-link {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--fg);
+  transition:
+    color 0.25s,
+    border-color 0.25s,
+    background-color 0.25s;
+}
+.social-link:hover,
+.social-link:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Lojas com duas versões de logo: uma para cada tema */
+.on-light-only {
+  display: none;
+}
+[data-theme="light"] .on-light-only {
+  display: revert;
+}
+[data-theme="light"] .on-dark-only {
+  display: none;
+}
+
+/* Logo em silhueta na cor do texto (lista de lojas) */
+.logo-mono {
+  filter: var(--logo-filter);
+}
+
+/* ============================================================
+   Faixas em movimento (qualidades, stack, logos)
+   ============================================================ */
+
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--dur, 40s) linear infinite;
+}
+.marquee[data-reverse] .marquee-track {
+  animation-direction: reverse;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+.marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.tech-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-right: 0.85rem;
+  padding: 0.8rem 1.35rem 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    border-color 0.3s,
+    background-color 0.3s;
+}
+.tech-chip:hover {
+  border-color: var(--accent);
+  background: var(--bg-2);
+}
+.tech-icon {
+  width: 1.4em;
+  height: 1.4em;
+  object-fit: contain;
+}
+/* Ícones escuros (Hydrogen, Liquid, PHP, MySQL) clareiam no tema escuro. */
+:root:not([data-theme="light"]) .tech-icon.is-dark {
+  filter: invert(1) hue-rotate(180deg) brightness(1.15);
+}
+.tech-dot {
   width: 0.5em;
   height: 0.5em;
+  margin-inline: 0.45em;
   border-radius: 50%;
-  background: var(--c);
-  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  background: var(--accent);
 }
-.work-row:hover .work-dot {
-  transform: scale(1.6);
+
+/* ============================================================
+   Clique: faíscas no ponto tocado e botão que afunda
+   ============================================================ */
+
+.click-burst {
+  position: fixed;
+  z-index: 1000;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.click-burst::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  animation: burst-ring 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.click-burst i {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 9px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  transform: rotate(var(--a)) translateX(6px);
+  animation: burst-spark 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@keyframes burst-ring {
+  from {
+    transform: scale(0.2);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+@keyframes burst-spark {
+  to {
+    transform: rotate(var(--a)) translateX(28px) scaleX(0.2);
+    opacity: 0;
+  }
+}
+
+.btn,
+.social-link,
+.tech-chip {
+  transition-property: background-color, color, border-color, transform;
+}
+.btn:active,
+.social-link:active {
+  transform: scale(0.95);
+}
+
+/* ============================================================
+   Troca de página e de tema (View Transitions)
+   ============================================================ */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+/* Página: a nova sobe como cortina e a antiga recua e escurece. */
+html[data-vt="page"]::view-transition-old(root) {
+  animation: vt-page-out 0.8s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+html[data-vt="page"]::view-transition-new(root) {
+  animation: vt-page-in 0.8s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+@keyframes vt-page-out {
+  to {
+    transform: translate3d(0, -7vh, 0) scale(0.95);
+    opacity: 0.25;
+    filter: blur(3px);
+  }
+}
+@keyframes vt-page-in {
+  from {
+    clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+  }
+  55% {
+    clip-path: polygon(0 18%, 100% 4%, 100% 100%, 0 100%);
+  }
+  to {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+/* Durante a cortina o conteúdo novo já entra pronto, sem o fade padrão. */
+html[data-vt] .page-enter {
+  animation: none;
+}
+
+/* Tema: o novo se espalha em círculo a partir do botão. */
+html[data-vt="theme"]::view-transition-old(root) {
+  animation: none;
+}
+html[data-vt="theme"]::view-transition-new(root) {
+  animation: vt-theme 0.85s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+@keyframes vt-theme {
+  from {
+    clip-path: circle(0 at var(--vt-x, 100%) var(--vt-y, 0));
+  }
+  to {
+    clip-path: circle(150vmax at var(--vt-x, 100%) var(--vt-y, 0));
+  }
+}
+
+/* ============================================================
+   Constelações das qualidades (home)
+   ============================================================ */
+
+.sky {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 400 / 1380;
+}
+@media (min-width: 768px) {
+  .sky {
+    aspect-ratio: 1200 / 540;
+  }
+}
+
+.nebula {
+  position: absolute;
+  inset: -8% -6%;
+  z-index: -1;
+  pointer-events: none;
+}
+.nebula-cloud {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: var(--neb-o, 0.75);
+  animation: nebula-drift 24s ease-in-out infinite alternate;
+}
+.nebula-cloud.n1 {
+  left: 0%;
+  top: 2%;
+  width: 90%;
+  height: 30%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--accent) 34%, transparent), transparent);
+}
+.nebula-cloud.n2 {
+  left: 10%;
+  top: 36%;
+  width: 90%;
+  height: 30%;
+  background: radial-gradient(closest-side, rgb(124 92 255 / 0.3), transparent);
+  animation-delay: -8s;
+}
+.nebula-cloud.n3 {
+  left: 4%;
+  top: 68%;
+  width: 90%;
+  height: 30%;
+  background: radial-gradient(closest-side, rgb(46 190 178 / 0.24), transparent);
+  animation-delay: -16s;
+}
+@media (min-width: 768px) {
+  .nebula-cloud.n1 {
+    left: 0%;
+    top: 4%;
+    width: 42%;
+    height: 90%;
+  }
+  .nebula-cloud.n2 {
+    left: 30%;
+    top: 10%;
+    width: 42%;
+    height: 90%;
+  }
+  .nebula-cloud.n3 {
+    left: 60%;
+    top: 0%;
+    width: 40%;
+    height: 90%;
+  }
+}
+[data-theme="light"] .nebula-cloud {
+  --neb-o: 0.5;
+}
+@keyframes nebula-drift {
+  to {
+    transform: translate3d(3%, 4%, 0) scale(1.12) rotate(6deg);
+  }
+}
+
+.sky-dust circle {
+  fill: var(--fg);
+}
+
+.cline {
+  stroke: var(--fg);
+  stroke-opacity: 0.32;
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition:
+    stroke-dashoffset 1.6s cubic-bezier(0.6, 0, 0.2, 1) var(--d, 0s),
+    stroke-opacity 0.5s,
+    stroke 0.5s;
+}
+.sky[data-lit] .cline {
+  stroke-dashoffset: 0;
+}
+.cline[data-dim] {
+  stroke-opacity: 0.12;
+}
+.cline[data-on] {
+  stroke: var(--accent);
+  stroke-opacity: 0.9;
+}
+
+.cname {
+  position: absolute;
+  left: var(--xm);
+  top: var(--ym);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: opacity 0.5s;
+}
+@media (min-width: 768px) {
+  .cname {
+    left: var(--xd);
+    top: var(--yd);
+  }
+}
+.cname-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+  line-height: 1;
+}
+.cname[data-dim] {
+  opacity: 0.35;
+}
+
+.cstar {
+  position: absolute;
+  left: var(--xm);
+  top: var(--ym);
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: opacity 0.5s;
+}
+@media (min-width: 768px) {
+  .cstar {
+    left: var(--xd);
+    top: var(--yd);
+  }
+}
+.cstar[data-dim] {
+  opacity: 0.4;
+}
+.cstar-dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--fg);
+  box-shadow: 0 0 8px 1px color-mix(in oklab, var(--fg) 55%, transparent);
+  transform: scale(0);
+  transition:
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i) * 0.12s),
+    background-color 0.4s,
+    box-shadow 0.4s;
+}
+.sky[data-lit] .cstar-dot {
+  transform: scale(1);
+  animation: star-pulse 3.6s ease-in-out calc(var(--i) * 0.4s) infinite;
+}
+.cstar[data-alpha] .cstar-dot {
+  width: 10px;
+  height: 10px;
+}
+/* Brilho em cruz da estrela ativa */
+.cstar-dot::before,
+.cstar-dot::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.cstar-dot::before {
+  width: 34px;
+  height: 1px;
+}
+.cstar-dot::after {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(180deg, transparent, var(--accent), transparent);
+}
+.cstar[data-on] .cstar-dot {
+  background: var(--accent);
+  box-shadow:
+    0 0 12px 3px color-mix(in oklab, var(--accent) 70%, transparent),
+    0 0 36px 12px color-mix(in oklab, var(--accent) 22%, transparent);
+}
+.cstar[data-on] .cstar-dot::before,
+.cstar[data-on] .cstar-dot::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+.cstar-label {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 10px);
+  transform: translateX(-50%);
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--bg) 72%, transparent);
+  font-size: clamp(14px, 1.15vw, 16px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--fg-2);
+  transition: color 0.3s;
+}
+.cstar[data-top] .cstar-label {
+  top: auto;
+  bottom: calc(50% + 10px);
+}
+.cstar:hover .cstar-label,
+.cstar[data-on] .cstar-label {
+  color: var(--fg);
+}
+@keyframes star-pulse {
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+.sky-readout-in {
+  animation: readout-in 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes readout-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+}
+
+/* ============================================================
+   Espectrógrafo (lojas em destaque)
+   ============================================================ */
+
+/* A faixa é um instrumento: fica escura nos dois temas. */
+.spectrum-band {
+  position: relative;
+  height: clamp(5.5rem, 11vw, 8.5rem);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background-color: #050507;
+}
+.spectrum[data-kind="absorption"] .spectrum-band {
+  box-shadow:
+    inset 0 18px 24px -18px rgb(0 0 0 / 0.55),
+    inset 0 -18px 24px -18px rgb(0 0 0 / 0.55);
+}
+.spectrum-faint {
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+}
+.spectrum-scan {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.1), transparent) no-repeat;
+  background-size: 16% 100%;
+  background-position: -20% 0;
+  animation: spectrum-scan 7s linear infinite;
+  pointer-events: none;
+}
+@keyframes spectrum-scan {
+  to {
+    background-position: 120% 0;
+  }
+}
+
+.spectrum-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--x);
+  width: 30px;
+  margin-left: -15px;
+  display: flex;
+  justify-content: center;
+}
+.spectrum-line-core {
+  width: 3px;
+  height: 100%;
+  background: color-mix(in srgb, var(--lc) 70%, #fff);
+  box-shadow:
+    0 0 10px 1px var(--lc),
+    0 0 28px 4px color-mix(in srgb, var(--lc) 55%, transparent);
+  opacity: 0;
+  transform: scaleY(0);
+  transition:
+    opacity 0.9s var(--d),
+    transform 1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d),
+    width 0.4s,
+    box-shadow 0.4s;
+}
+.spectrum[data-lit] .spectrum-line-core {
+  opacity: calc(0.4 + 0.6 * var(--s));
+  transform: none;
+}
+.spectrum[data-kind="emission"] .spectrum-line[data-active] .spectrum-line-core {
+  width: 4px;
+  opacity: 1;
+  box-shadow:
+    0 0 14px 2px var(--lc),
+    0 0 50px 12px color-mix(in srgb, var(--lc) 50%, transparent);
+  animation: line-flicker 2.6s ease-in-out infinite;
+}
+/* Absorção: a linha é escura sobre o arco-íris */
+.spectrum[data-kind="absorption"] .spectrum-line-core {
+  width: 3px;
+  background: #050507;
+  box-shadow: 0 0 3px 1px rgb(5 5 7 / 0.6);
+}
+.spectrum[data-kind="absorption"] .spectrum-line[data-active] .spectrum-line-core {
+  width: 6px;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.65),
+    0 0 4px 2px rgb(5 5 7 / 0.7);
+}
+.spectrum-line-tag {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: rgb(5 5 7 / 0.78);
+  color: #fff;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, -6px);
+  transition:
+    opacity 0.35s,
+    transform 0.35s;
+}
+.spectrum-line[data-active] .spectrum-line-tag,
+.spectrum-line:hover .spectrum-line-tag {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+@keyframes line-flicker {
+  50% {
+    opacity: 0.82;
+  }
+}
+
+.spectrum-scale {
+  position: relative;
+  height: 1.7rem;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--fg-2);
+}
+.spectrum-scale span {
+  position: absolute;
+  top: 0.55rem;
+  transform: translateX(-50%);
+}
+.spectrum-scale span::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -0.55rem;
+  width: 1px;
+  height: 0.35rem;
+  background: var(--line);
+}
+.spectrum-scale .spectrum-unit {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.spectrum-scale .spectrum-unit::before {
+  display: none;
+}
+.spectrum-track {
+  height: 1px;
+  background: var(--line);
+}
+.spectrum-progress {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left;
+  animation: spectrum-progress linear forwards;
+}
+@keyframes spectrum-progress {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.spectrum-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.95rem 0.5rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.92rem;
+  color: var(--fg-2);
+  transition:
+    color 0.3s,
+    border-color 0.3s,
+    background-color 0.3s,
+    transform 0.25s;
+}
+.spectrum-chip:hover {
+  color: var(--fg);
+}
+.spectrum-chip:active {
+  transform: scale(0.95);
+}
+.spectrum-chip[aria-pressed="true"] {
+  color: var(--fg);
+  border-color: color-mix(in srgb, var(--lc) 70%, var(--fg));
+  background: color-mix(in srgb, var(--lc) 10%, transparent);
+}
+.spectrum-chip-code {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--lc) 75%, var(--fg));
+}
+
+.spectrum-readout > * {
+  animation: readout-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.spectrum-readout > :nth-child(2) {
+  animation-delay: 0.08s;
+}
+.spectrum-code {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(3.4rem, 6vw, 5.2rem);
+  line-height: 0.8;
+  color: color-mix(in srgb, var(--lc) 80%, var(--fg));
+  text-shadow: 0 0 34px color-mix(in srgb, var(--lc) 45%, transparent);
+}
+.spectrum-bullet {
+  flex-shrink: 0;
+  width: 0.75rem;
+  height: 1px;
+  margin-top: 0.75em;
+  background: color-mix(in srgb, var(--lc) 75%, var(--fg));
+}
+.spectrum-result {
+  padding-left: 1rem;
+  border-left: 2px solid color-mix(in srgb, var(--lc) 75%, var(--fg));
+}
+.spectrum-result-value {
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+/* ============================================================
+   Cursor temático: estrela + órbita com lua
+   ============================================================ */
+
+.has-space-cursor,
+.has-space-cursor * {
+  cursor: none !important;
+}
+.has-space-cursor input,
+.has-space-cursor textarea,
+.has-space-cursor [contenteditable="true"] {
+  cursor: text !important;
+}
+
+.space-cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.space-cursor[data-visible] {
+  opacity: 1;
+}
+.space-cursor[data-text] {
+  opacity: 0;
+}
+.space-cursor-star,
+.space-cursor-orbit {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.space-cursor-star {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px 2px color-mix(in oklab, var(--accent) 60%, transparent);
+}
+.space-cursor-orbit {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+}
+.space-cursor-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in oklab, var(--fg) 40%, transparent);
+  border-radius: 50%;
+  transition:
+    scale 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 0.3s;
+  animation: cursor-orbit 3.2s linear infinite;
+}
+.space-cursor-moon {
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--fg);
+}
+.space-cursor[data-hover] .space-cursor-ring {
+  scale: 1.55;
+  border-color: var(--accent);
+  animation-duration: 1.2s;
+}
+.space-cursor[data-hover] .space-cursor-moon {
+  background: var(--accent);
+}
+.space-cursor[data-down] .space-cursor-ring {
+  scale: 0.7;
+}
+@keyframes cursor-orbit {
+  to {
+    rotate: 360deg;
+  }
 }
 
 /* ============================================================
@@ -548,12 +1648,29 @@
     transition: opacity 0.4s;
   }
   .page-enter,
+  .marquee-track,
+  .nebula-cloud,
+  .spectrum-scan,
+  .sky[data-lit] .cstar-dot,
+  .spectrum-line[data-active] .spectrum-line-core,
   .twinkle,
+  .sun-ring,
   .scroll-line::after {
     animation: none;
   }
+  .shooting-star {
+    display: none;
+  }
   .orbit-ring {
     animation: none;
+    stroke-dashoffset: 0;
+  }
+  .cline,
+  .cstar-dot,
+  .spectrum-line-core {
+    transition: none;
+  }
+  .cline {
     stroke-dashoffset: 0;
   }
 }

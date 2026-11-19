@@ -10,7 +10,8 @@ import NotFound from "./pages/NotFound";
 export default function App() {
   return (
     <PreferencesProvider>
-      <BrowserRouter>
+      {/* Sem startTransition: a troca de rota precisa ser síncrona dentro da View Transition. */}
+      <BrowserRouter useTransitions={false}>
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />

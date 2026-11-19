@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router";
+import { useEffect, useState, type MouseEvent } from "react";
+import { useLocation } from "react-router";
 import { usePrefs } from "../context/Preferences";
 import EEMark from "./EEMark";
+import { TLink as Link, TNavLink as NavLink } from "./TransitionLink";
+import { runTransition } from "../lib/transition";
 
 function ThemeIcon() {
   return (
@@ -27,6 +29,17 @@ export default function Header() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
+
+  // Novo tema se espalha em círculo a partir do botão.
+  const switchTheme = (e: MouseEvent<HTMLButtonElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX || r.left + r.width / 2;
+    const y = e.clientY || r.top + r.height / 2;
+    const root = document.documentElement;
+    root.style.setProperty("--vt-x", `${x}px`);
+    root.style.setProperty("--vt-y", `${y}px`);
+    runTransition("theme", toggleTheme);
+  };
 
   const links = [
     { to: "/trabalhos", label: t.nav.work },
@@ -61,7 +74,7 @@ export default function Header() {
             {langToggle}
             <button
               type="button"
-              onClick={toggleTheme}
+              onClick={switchTheme}
               className="grid h-8 w-8 place-items-center"
               aria-label={theme === "dark" ? t.nav.toLight : t.nav.toDark}
             >
@@ -116,7 +129,7 @@ export default function Header() {
 
         <div className="page-wrap flex items-center justify-between border-t border-line py-6">
           {langToggle}
-          <button type="button" onClick={toggleTheme} className="nav-link flex items-center gap-2">
+          <button type="button" onClick={switchTheme} className="nav-link flex items-center gap-2">
             <ThemeIcon /> {theme === "dark" ? t.nav.light : t.nav.dark}
           </button>
         </div>

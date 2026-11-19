@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import type { Client } from "../content/clients";
 import { usePrefs } from "../context/Preferences";
+import { initials } from "../lib/orbit";
 
 interface Props {
   clients: Client[];
@@ -67,33 +68,66 @@ export default function ClientDrawer({ clients, index, onChange }: Props) {
               </button>
             </header>
 
-            <div className="flex-1 overflow-y-auto px-6 py-12 md:px-10">
-              <div className="drawer-planet" style={{ "--c": c.color } as CSSProperties} aria-hidden="true">
-                <span className="planet-core">
-                  {c.ring && <span className="planet-ring" />}
-                  <span className="planet-body" />
-                  {c.ring && <span className="planet-ring planet-ring-front" />}
-                </span>
-              </div>
+            <div className="flex-1 overflow-y-auto px-6 py-8 md:px-10">
+              {/* Banner da marca: logo grande sobre a cor da loja. Leva ao site quando há link. */}
+              {(() => {
+                const banner = (
+                  <>
+                    <span className="brand-banner-glow" aria-hidden="true" />
+                    {c.logo ? (
+                      <img
+                        src={c.logoOnDark ?? c.logo}
+                        alt={`${t.drawer.logoAlt} ${c.name}`}
+                        decoding="async"
+                        className={`brand-banner-logo${c.logoOnDark || c.logoOriginal ? " is-original" : ""}`}
+                      />
+                    ) : (
+                      <span className="brand-banner-mono">{initials(c.name)}</span>
+                    )}
+                    {c.url && (
+                      <span className="brand-banner-cta label">
+                        {t.drawer.visit} <span aria-hidden="true">↗</span>
+                      </span>
+                    )}
+                  </>
+                );
+                const style = { "--c": c.color } as CSSProperties;
+                return c.url ? (
+                  <a href={c.url} target="_blank" rel="noopener noreferrer" className="brand-banner group" style={style}>
+                    {banner}
+                  </a>
+                ) : (
+                  <div className="brand-banner" style={style}>
+                    {banner}
+                  </div>
+                );
+              })()}
 
-              <h2 id="drawer-title" className="mt-12 text-[clamp(2.4rem,6vw,3.75rem)] font-medium leading-none tracking-[-0.03em]">
+              <span className="label mt-8 inline-block rounded-full border border-line px-3 py-1.5">
+                {t.stack[c.stack]}
+              </span>
+              <h2 id="drawer-title" className="mt-5 text-[clamp(2.4rem,6vw,3.75rem)] font-medium leading-none tracking-[-0.03em]">
                 {c.name}
               </h2>
               <p className="mt-4 text-lg text-fg-2">{c.segment[lang]}</p>
 
-              <dl className="mt-12 border-t border-line">
+              <dl className="mt-10 border-t border-line">
                 <div className="grid grid-cols-[8rem_1fr] gap-4 border-b border-line py-4">
                   <dt className="label pt-0.5">{t.drawer.segment}</dt>
                   <dd>{c.segment[lang]}</dd>
                 </div>
                 <div className="grid grid-cols-[8rem_1fr] gap-4 border-b border-line py-4">
-                  <dt className="label pt-0.5">{t.drawer.platform}</dt>
-                  <dd>{c.platform}</dd>
+                  <dt className="label pt-0.5">{t.drawer.stack}</dt>
+                  <dd>{t.stack[c.stack]}</dd>
                 </div>
                 {c.url && (
                   <div className="grid grid-cols-[8rem_1fr] gap-4 border-b border-line py-4">
                     <dt className="label pt-0.5">{t.drawer.site}</dt>
-                    <dd className="truncate">{c.url.replace(/^https?:\/\/(www\.)?/, "")}</dd>
+                    <dd className="truncate">
+                      <a href={c.url} target="_blank" rel="noopener noreferrer" className="ulink">
+                        {c.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")} ↗
+                      </a>
+                    </dd>
                   </div>
                 )}
               </dl>

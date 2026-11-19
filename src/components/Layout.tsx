@@ -3,6 +3,8 @@ import { Outlet, useLocation } from "react-router";
 import { usePrefs } from "../context/Preferences";
 import Header from "./Header";
 import Footer from "./Footer";
+import ClickSparks from "./ClickSparks";
+import SpaceCursor from "./SpaceCursor";
 
 export default function Layout() {
   const { t } = usePrefs();
@@ -22,6 +24,8 @@ export default function Layout() {
         <Outlet />
       </main>
       <Footer />
+      <ClickSparks />
+      <SpaceCursor />
     </>
   );
 }

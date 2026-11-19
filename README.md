@@ -18,8 +18,9 @@ Todo o texto e os dados ficam em `src/content/`:
 | Arquivo | O que tem |
 | --- | --- |
 | `strings.ts` | Todos os textos do site em português e inglês |
-| `clients.ts` | Lojas do sistema solar e da página de trabalhos (nome, segmento, link, cor e órbita do planeta, escopo opcional) |
-| `projects.ts` | Projetos pessoais (GameRent, Pac-Man) |
+| `clients.ts` | Lojas (nome, segmento, stack, link, logo, cor e escopo). As que têm `orbit` viram planetas na home; as outras aparecem em "Mais lojas" |
+| `spectrum.ts` | Lojas em destaque como linhas espectrais: Hydrogen nas linhas do hidrogênio, Liquid nas linhas do Sol, com resultado e link do case |
+| `tech.ts` | Linguagens e ferramentas das faixas da home e os ícones da stack na página Sobre |
 | `site.ts` | E-mail, redes, localização e caminho do currículo |
 
 Para adicionar uma loja, copie um bloco em `clients.ts`. O campo `scope` é opcional e aparece no painel de detalhes como "O que fiz".

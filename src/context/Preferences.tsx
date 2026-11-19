@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { strings, type Lang, type Strings } from "../content/strings";
 
 export type Theme = "dark" | "light";
@@ -44,7 +44,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
   }, [lang]);
 
-  useEffect(() => {
+  // Layout effect: o tema muda no mesmo commit, a tempo da View Transition capturar o estado novo.
+  useLayoutEffect(() => {
     document.documentElement.dataset.theme = theme;
     document
       .querySelector('meta[name="theme-color"]')
