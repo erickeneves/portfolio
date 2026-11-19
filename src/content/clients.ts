@@ -276,9 +276,11 @@ export const clients: Client[] = [
     logo: cdn("0911/3056/0819/files/logo-p.svg?v=1737469309"),
     scope: {
       pt: [
+        "Refinamento do layout das páginas de produto, dos cards da vitrine e dos menus, que ajudou a loja a converter mais durante as campanhas.",
         "Análise e escolha de app para aviso de reposição de estoque, junto com a loja US.",
       ],
       en: [
+        "Refined the layout of product pages, product cards and menus, helping the store convert better during campaigns.",
         "Research and selection of a back-in-stock notification app, shared with the US store.",
       ],
     },

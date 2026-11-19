@@ -43,6 +43,6 @@ A animação de entrada da home é uma seção alta com conteúdo fixo na tela (
 
 O site usa rotas reais (`/trabalhos`, `/sobre`, `/contato`). Na hospedagem, todas as rotas precisam devolver o `index.html`:
 
-- Vercel: crie `vercel.json` com `{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }`.
+- Vercel: o `vercel.json` da raiz já faz isso. Basta importar o repositório na Vercel com as configurações padrão (build `npm run build`, saída `dist`); cada push na `main` publica uma versão nova.
 - Netlify: crie `public/_redirects` com a linha `/* /index.html 200`.
 - GitHub Pages: não tem esse redirecionamento; prefira Vercel ou Netlify.
