@@ -1537,6 +1537,21 @@ html[data-vt="theme"]::view-transition-new(root) {
   margin-top: 0.75em;
   background: color-mix(in srgb, var(--lc) 75%, var(--fg));
 }
+/* Selo de reconhecimento da loja (painel e espectro) */
+.award {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--fg);
+}
+.award > span {
+  color: var(--accent);
+}
+
 .spectrum-result {
   padding-left: 1rem;
   border-left: 2px solid color-mix(in srgb, var(--lc) 75%, var(--fg));

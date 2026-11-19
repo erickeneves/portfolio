@@ -110,6 +110,11 @@ export default function ClientDrawer({ clients, index, onChange }: Props) {
                 {c.name}
               </h2>
               <p className="mt-4 text-lg text-fg-2">{c.segment[lang]}</p>
+              {c.award && (
+                <p className="award mt-5">
+                  <span aria-hidden="true">✦</span> {c.award[lang]}
+                </p>
+              )}
 
               <dl className="mt-10 border-t border-line">
                 <div className="grid grid-cols-[8rem_1fr] gap-4 border-b border-line py-4">

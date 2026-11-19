@@ -144,6 +144,11 @@ function SpectrumBand({ kind, lines, onOpen }: BandProps) {
           <p className="mt-3 text-fg-2">
             {client.segment[lang]} · {t.stack[client.stack]}
           </p>
+          {client.award && (
+            <p className="award mt-4">
+              <span aria-hidden="true">✦</span> {client.award[lang]}
+            </p>
+          )}
           <div className="mt-7 flex h-9 items-center">
             <BrandLogo client={client} className="h-full w-auto max-w-[9rem]" />
           </div>
@@ -164,18 +169,22 @@ function SpectrumBand({ kind, lines, onOpen }: BandProps) {
             </>
           )}
 
-          {line.result && (
+          {line.results && (
             <div className="spectrum-result mt-7">
-              <p>
-                <span className="spectrum-result-value">
-                  {line.result.value}
-                  <span className="text-accent" aria-hidden="true">
-                    *
-                  </span>
-                </span>{" "}
-                <span className="text-fg-2">{line.result.label[lang]}</span>
-              </p>
-              <p className="mt-2 text-xs text-fg-2">* {t.home.spectrum.note}</p>
+              <ul className="space-y-3">
+                {line.results.map((r) => (
+                  <li key={r.value}>
+                    <span className="spectrum-result-value">
+                      {r.value}
+                      <span className="text-accent" aria-hidden="true">
+                        *
+                      </span>
+                    </span>{" "}
+                    <span className="text-fg-2">{r.label[lang]}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-xs text-fg-2">* {t.home.spectrum.note}</p>
             </div>
           )}
 
@@ -190,8 +199,8 @@ function SpectrumBand({ kind, lines, onOpen }: BandProps) {
                 {t.home.spectrum.visit} ↗
               </a>
             )}
-            {line.result && (
-              <a href={line.result.source} target="_blank" rel="noopener noreferrer" className="label ulink hover:text-fg">
+            {line.source && (
+              <a href={line.source} target="_blank" rel="noopener noreferrer" className="label ulink hover:text-fg">
                 {t.home.spectrum.source} ↗
               </a>
             )}

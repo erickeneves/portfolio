@@ -1,10 +1,13 @@
 import type { Lang } from "./strings";
+import { spectrumSlugs } from "./spectrum";
 import rolandLogo from "../assets/clients/roland.svg";
 import bossLogo from "../assets/clients/boss.svg";
 import darknessLogo from "../assets/clients/darkness.png";
 import nutrifyLogo from "../assets/clients/nutrify.png";
 import nutrifyLogoDark from "../assets/clients/nutrify-dark.png";
 import hangLooseLogoDark from "../assets/clients/hangloose-dark.png";
+import rustyLogo from "../assets/clients/rusty.png";
+import sensetupLogo from "../assets/clients/sensetup.png";
 
 type Localized<T> = Record<Lang, T>;
 
@@ -43,6 +46,8 @@ export interface Client {
   logoOnDark?: string;
   /** O que você fez no projeto. Aparece no painel de detalhes como "O que fiz". */
   scope?: Localized<string[]>;
+  /** Reconhecimento público da loja, mostrado como selo no painel e no espectro. */
+  award?: Localized<string>;
   /** Presente = a loja aparece como planeta no sistema solar da home. */
   orbit?: OrbitProps;
 }
@@ -160,7 +165,7 @@ export const clients: Client[] = [
     url: "https://store.roland.com.br",
     logo: rolandLogo,
     scope: rolandScope,
-    orbit: { orbit: 1, size: 1.1, phase: 2.29 },
+    orbit: { orbit: 1, size: 1.1, phase: 1.77 },
   },
   {
     slug: "boss",
@@ -183,6 +188,17 @@ export const clients: Client[] = [
     orbit: { orbit: 0, size: 0.95, phase: 4.78 },
   },
   {
+    slug: "fujifilm",
+    name: "Fujifilm",
+    segment: { pt: "Câmeras e fotografia", en: "Cameras and photography" },
+    stack: "Liquid",
+    color: "#2f8f5b",
+    url: "https://loja.fujifilm.com.br",
+    logo: "https://loja.fujifilm.com.br/cdn/shop/files/fujifilm.svg?v=1743620247",
+    award: { pt: "Entre as 100 melhores lojas Shopify do Brasil", en: "Among Brazil's top 100 Shopify stores" },
+    orbit: { orbit: 1, size: 1.05, phase: 3.34 },
+  },
+  {
     slug: "mari-maria-makeup",
     name: "Mari Maria Makeup",
     segment: { pt: "Maquiagem", en: "Makeup" },
@@ -202,7 +218,7 @@ export const clients: Client[] = [
         "Coupon rule investigation and address validation at checkout.",
       ],
     },
-    orbit: { orbit: 1, size: 1, phase: 4.38 },
+    orbit: { orbit: 1, size: 1, phase: 4.91 },
   },
   {
     slug: "hurley",
@@ -213,8 +229,16 @@ export const clients: Client[] = [
     url: "https://hurley.com.br",
     logo: cdn("0759/0356/6136/files/Frame_3.svg?v=1685531539"),
     scope: {
-      pt: ["Ajustes de CRO nas páginas de produto.", "Avisos no checkout replicados entre as lojas do grupo."],
-      en: ["CRO tweaks on product pages.", "Checkout notices rolled out across the group's stores."],
+      pt: [
+        "Ajustes de CRO nas páginas de produto.",
+        "Seção de kits de Black Friday adaptada do layout da Hang Loose.",
+        "Aviso de prazo de envio no checkout, replicado entre as lojas do grupo.",
+      ],
+      en: [
+        "CRO tweaks on product pages.",
+        "Black Friday bundle section adapted from the Hang Loose layout.",
+        "Shipping lead time notice at checkout, rolled out across the group's stores.",
+      ],
     },
     orbit: { orbit: 2, size: 1, phase: 1.1 },
   },
@@ -231,10 +255,12 @@ export const clients: Client[] = [
     scope: {
       pt: [
         "Landing page da collab Hang Loose x Fat Buddha, implementada a partir do layout aprovado.",
+        "Seção de kits de Black Friday que serviu de base para as outras lojas do grupo.",
         "Avisos no checkout compartilhados com as outras lojas do grupo.",
       ],
       en: [
         "Landing page for the Hang Loose x Fat Buddha collab, built from the approved layout.",
+        "Black Friday bundle section that became the template for the group's other stores.",
         "Checkout notices shared with the group's other stores.",
       ],
     },
@@ -242,15 +268,19 @@ export const clients: Client[] = [
   },
   {
     slug: "iron-studios",
-    name: "Iron Studios",
+    name: "Iron Studios BR",
     segment: { pt: "Estátuas colecionáveis", en: "Collectible statues" },
     stack: "Liquid",
     color: "#a98d64",
     url: "https://ironstudios.com.br",
     logo: cdn("0911/3056/0819/files/logo-p.svg?v=1737469309"),
     scope: {
-      pt: ["Versão da loja em inglês.", "Análise e escolha de app para aviso de reposição de estoque."],
-      en: ["English version of the store.", "Research and selection of a back-in-stock notification app."],
+      pt: [
+        "Análise e escolha de app para aviso de reposição de estoque, junto com a loja US.",
+      ],
+      en: [
+        "Research and selection of a back-in-stock notification app, shared with the US store.",
+      ],
     },
     orbit: { orbit: 2, size: 1.05, phase: 4.24, ring: true },
   },
@@ -266,6 +296,84 @@ export const clients: Client[] = [
   },
 
   /* ---------- Mais lojas ---------- */
+  {
+    slug: "vissla",
+    name: "Vissla",
+    segment: { pt: "Surfwear e wetsuits", en: "Surfwear and wetsuits" },
+    stack: "Liquid",
+    color: "#2f8f88",
+    url: "https://vissla.com.br",
+    logo: "https://vissla.com.br/cdn/shop/files/logo-vissla_572b6c37-8ae9-491d-8d70-9879dc119e63.png?v=1683212151&width=400",
+    scope: {
+      pt: [
+        "Seção de kits de Black Friday adaptada do layout da Hang Loose, com desconto aplicado no carrinho e no checkout.",
+        "Aviso de prazo de envio no checkout, replicado entre as lojas do grupo.",
+      ],
+      en: [
+        "Black Friday bundle section adapted from the Hang Loose layout, with the discount applied in the cart and at checkout.",
+        "Shipping lead time notice at checkout, rolled out across the group's stores.",
+      ],
+    },
+  },
+  {
+    slug: "rusty",
+    name: "Rusty",
+    segment: { pt: "Roupas de surf", en: "Surf apparel" },
+    stack: "Liquid",
+    color: "#9a3b32",
+    url: "https://rusty.com.br",
+    logo: rustyLogo,
+    scope: {
+      pt: [
+        "Seção de kits de Black Friday adaptada do layout da Hang Loose, com desconto aplicado no carrinho e no checkout.",
+        "Aviso de prazo de envio no checkout, replicado entre as lojas do grupo.",
+      ],
+      en: [
+        "Black Friday bundle section adapted from the Hang Loose layout, with the discount applied in the cart and at checkout.",
+        "Shipping lead time notice at checkout, rolled out across the group's stores.",
+      ],
+    },
+  },
+  {
+    slug: "volcom",
+    name: "Volcom",
+    segment: { pt: "Skate, surf e lifestyle", en: "Skate, surf and lifestyle" },
+    stack: "Liquid",
+    color: "#5c5f66",
+    url: "https://volcom.com.br",
+    logo: "https://volcom.com.br/cdn/shop/files/Rectangle_41_1.png?v=1705955587&width=400",
+    scope: {
+      pt: [
+        "Seção de kits de Black Friday na home, adaptada à identidade da marca.",
+        "Remoção da página de outlet.",
+        "Aviso de prazo de envio no checkout, replicado entre as lojas do grupo.",
+      ],
+      en: [
+        "Black Friday bundle section on the home page, adapted to the brand's identity.",
+        "Outlet page removal.",
+        "Shipping lead time notice at checkout, rolled out across the group's stores.",
+      ],
+    },
+  },
+  {
+    slug: "iron-studios-us",
+    name: "Iron Studios US",
+    segment: { pt: "Estátuas colecionáveis", en: "Collectible statues" },
+    stack: "Liquid",
+    color: "#a98d64",
+    url: "https://ironstudios.com",
+    logo: cdn("0911/3056/0819/files/logo-p.svg?v=1737469309"),
+    scope: {
+      pt: [
+        "Textos do carrinho traduzidos para inglês.",
+        "Análise e escolha de app para aviso de reposição de estoque, junto com a loja BR.",
+      ],
+      en: [
+        "Cart copy translated into English.",
+        "Research and selection of a back-in-stock notification app, shared with the BR store.",
+      ],
+    },
+  },
   {
     slug: "limited-edition",
     name: "Limited Edition",
@@ -341,11 +449,27 @@ export const clients: Client[] = [
   },
   {
     slug: "barthelemy",
-    name: "Barthelemy",
+    name: "Barthelemy BR",
     segment: { pt: "Resortwear com alfaiataria", en: "Tailored resortwear" },
     stack: "Liquid",
     color: "#2f4f7a",
     url: "https://barthelemy.com.br",
+    logo: cdn("2648/8462/files/barthelemy-logo-white.svg?v=1701800273"),
+    scope: {
+      pt: [
+        "Grade de coleções em mosaico como padrão no mobile.",
+      ],
+      en: [
+        "Mosaic grid as the default collection view on mobile.",
+      ],
+    },
+  },
+  {
+    slug: "barthelemy-us",
+    name: "Barthelemy US",
+    segment: { pt: "Resortwear com alfaiataria", en: "Tailored resortwear" },
+    stack: "Liquid",
+    color: "#2f4f7a",
     logo: cdn("2648/8462/files/barthelemy-logo-white.svg?v=1701800273"),
   },
   {
@@ -395,8 +519,158 @@ export const clients: Client[] = [
     url: "https://rezzet.ca",
     logo: cdn("0822/7913/7533/files/Logo_f1a27202-fba8-4773-834d-bfb38aacaf79.png?v=1786549745&width=400"),
   },
+  {
+    slug: "vix",
+    name: "ViX Paula Hermanny",
+    segment: { pt: "Moda praia premium", en: "Premium swimwear" },
+    stack: "Liquid",
+    color: "#c9a35b",
+    url: "https://www.vixbrasil.com",
+    logo: cdn("0787/2063/1005/files/logo.svg?v=1774275190"),
+  },
+  {
+    slug: "rocinante",
+    name: "Rocinante",
+    segment: { pt: "Discos de vinil e clube de assinatura", en: "Vinyl records and subscription club" },
+    stack: "Liquid",
+    color: "#b5562f",
+    url: "https://www.tresselosrocinante.com",
+    logo: cdn("0907/1352/2476/files/fabrica_rocinante_logo_branca.svg?v=1744134208"),
+    scope: {
+      pt: [
+        "Toca-discos visível só para clientes com a tag de assinante anual, fora das vitrines e da busca.",
+        "Banner do clube de assinatura no blog, com bloco central e carrosséis laterais.",
+        "Avaliações do Judge.me integradas às páginas de produto do tema personalizado.",
+      ],
+      en: [
+        "Record player visible only to customers tagged as annual subscribers, hidden from listings and search.",
+        "Subscription club banner on the blog, with a central block and side carousels.",
+        "Judge.me reviews built into the custom theme's product pages.",
+      ],
+    },
+  },
+  {
+    slug: "bonne-soiree",
+    name: "Bonne Soirée",
+    segment: { pt: "Moda feminina", en: "Women's fashion" },
+    stack: "Liquid",
+    color: "#b89a7a",
+    url: "https://www.bonnesoiree.com.br",
+    logo: "https://www.bonnesoiree.com.br/cdn/shop/files/BonneSoiree_LOGO2024_preto.png?v=1753289440&width=600",
+    scope: {
+      pt: [
+        "CNPJ e endereço da empresa no rodapé mobile.",
+      ],
+      en: [
+        "Company tax ID (CNPJ) and address in the mobile footer.",
+      ],
+    },
+  },
+  {
+    slug: "sensetup",
+    name: "Sensetup",
+    segment: { pt: "Cadeiras ergonômicas e mesas reguláveis", en: "Ergonomic chairs and standing desks" },
+    stack: "Liquid",
+    color: "#3d5a80",
+    url: "https://sensetup.com.br",
+    logo: sensetupLogo,
+  },
+  {
+    slug: "kuf",
+    name: "KUF",
+    segment: { pt: "Body splash e fragrâncias", en: "Body splashes and fragrances" },
+    stack: "Liquid",
+    color: "#9b8a7a",
+    url: "https://kuf.com.br",
+    logo: cdn("0723/7029/0928/files/logo_cinza_01e5c5e8-6b7a-41aa-a32f-acfbd8508885.svg?v=1731956794"),
+    scope: {
+      pt: [
+        "Selos de desconto na página de produto: 25% nos perfumes e 30% nos kits.",
+      ],
+      en: [
+        "Discount badges on product pages: 25% off perfumes and 30% off bundles.",
+      ],
+    },
+  },
+  {
+    slug: "francis",
+    name: "Francis",
+    segment: { pt: "Sabonetes e cuidados com o corpo", en: "Soaps and body care" },
+    stack: "Liquid",
+    color: "#7a6aa8",
+    url: "https://francis.com.br",
+    logo: "https://francis.com.br/cdn/shop/files/francis_preto.png?v=1770389164&width=400",
+    scope: {
+      pt: [
+        "Seção de Black Friday na home com caixas de presente e contagens regressivas que liberam coleções com desconto em sequência.",
+      ],
+      en: [
+        "Black Friday home section with gift boxes and countdowns that unlock discounted collections in sequence.",
+      ],
+    },
+  },
+  {
+    slug: "marmita-fitness",
+    name: "Marmita Fitness",
+    segment: { pt: "Refeições saudáveis congeladas", en: "Healthy frozen meals" },
+    stack: "Liquid",
+    color: "#e0873a",
+    url: "https://marmitafitness.com.br",
+    logo: cdn("0817/2260/5804/files/Logo-Marmita-Fitness-certa_f0b8eee5-95df-40fc-bf09-f5107f87c170.png?v=1779806055&width=400"),
+    scope: {
+      pt: [
+        "CPF obrigatório no checkout para entregas e retiradas.",
+        "Bloqueio de feriados no calendário de entrega e retirada, com tutorial do app Pickeasy para o time.",
+        "Revisão do fluxo de compra: carrinho, agendamento de retirada e frete por CEP.",
+      ],
+      en: [
+        "Required CPF at checkout for deliveries and pickups.",
+        "Holidays blocked in the delivery and pickup calendar, with a Pickeasy tutorial for the team.",
+        "Purchase flow review: cart, pickup scheduling and shipping by ZIP code.",
+      ],
+    },
+  },
+  {
+    slug: "comida-de-dragao",
+    name: "Comida de Dragão",
+    segment: { pt: "Alimento à base de inseto para pets", en: "Insect-based pet food" },
+    stack: "Liquid",
+    color: "#4f7a3a",
+    url: "https://www.comidadedragao.com.br",
+    logo: cdn("0895/4311/5055/files/comida-dragao-logo-branco_2x_5fb01e2b-2d87-4dc0-add5-26fdf5e6b9c9.png?v=1774789546&width=400"),
+    scope: {
+      pt: [
+        "Layout da página de carrinho no desktop e no mobile.",
+      ],
+      en: [
+        "Cart page layout for desktop and mobile.",
+      ],
+    },
+  },
+  {
+    slug: "plenitude",
+    name: "Plenitude",
+    segment: { pt: "Livraria cristã", en: "Christian bookstore" },
+    stack: "Liquid",
+    color: "#6b5a8e",
+    url: "https://plenitudedistribuidora.com.br",
+    logo: "https://plenitudedistribuidora.com.br/cdn/shop/files/plenitude-logo.png?v=1763662202&width=500",
+    scope: {
+      pt: ["Correção do cálculo de frete no carrinho lateral.", "Correção da quebra de layout da página de produto no Safari."],
+      en: ["Fixed the shipping quote in the side cart.", "Fixed the product page layout break in Safari."],
+    },
+  },
+  {
+    slug: "up-brasil",
+    name: "UP Brasil",
+    segment: { pt: "Cartão de benefícios e bem-estar", en: "Wellbeing benefits card" },
+    stack: "Liquid",
+    color: "#e2632a",
+    logo: "https://www.upbrasil.com/wp-content/uploads/2026/06/up-logo-novo.svg",
+  },
 ];
 
 export const featuredClients = clients.filter((c): c is FeaturedClient => c.orbit !== undefined);
-export const otherClients = clients.filter((c) => c.orbit === undefined);
+/** Lojas que não são planetas nem linhas do espectro: viram o grid "Mais lojas". */
+export const otherClients = clients.filter((c) => c.orbit === undefined && !spectrumSlugs.has(c.slug));
 export const headlessCount = clients.filter((c) => c.stack === "Hydrogen").length;
