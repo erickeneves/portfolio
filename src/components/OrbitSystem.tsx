@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperti
 import type { FeaturedClient } from "../content/clients";
 import { usePrefs } from "../context/Preferences";
 import { prefersReducedMotion } from "../lib/hooks";
-import { ORBITS, SPEEDS, initials, lerp, orbitGeometry, smoothstep } from "../lib/orbit";
+import { ORBITS, SPEEDS, ellipseSlots, initials, lerp, orbitGeometry, smoothstep } from "../lib/orbit";
 import EEMark from "./EEMark";
 import ShootingStars from "./ShootingStars";
 
@@ -16,6 +16,8 @@ interface Props {
   /** Mostra o nome de todos os planetas. Com false, só o destacado aparece. */
   labels?: boolean;
   stars?: boolean;
+  /** Deixa o convite "Clique" sempre visível embaixo do sol, com um pulso em volta. */
+  hint?: boolean;
   /** Avisa quando o sol vira buraco negro (e volta). */
   onHoleChange?: (open: boolean) => void;
 }
@@ -34,6 +36,7 @@ export default function OrbitSystem({
   spin,
   labels = true,
   stars = true,
+  hint = false,
   onHoleChange,
 }: Props) {
   const { t, lang } = usePrefs();
@@ -86,7 +89,7 @@ export default function OrbitSystem({
     const root = rootRef.current;
     if (!root || !geo.w) return;
     const reduce = prefersReducedMotion();
-    const n = clients.length;
+    const slots = ellipseSlots(clients.length, geo.cardRx, geo.cardRy, geo.portrait ? 3 : 2);
     let raf = 0;
     let last = performance.now();
     let speed = 1;
@@ -117,9 +120,8 @@ export default function OrbitSystem({
         const oy = geo.cy + Math.sin(a) * r * geo.tilt;
         const d = (Math.sin(a) + 1) / 2; // 0 = fundo, 1 = frente
 
-        const ca = -Math.PI / 2 + (i / n) * Math.PI * 2;
-        const kx = geo.cx + Math.cos(ca) * geo.cardRx;
-        const ky = geo.cy + Math.sin(ca) * geo.cardRy;
+        const kx = geo.cx + slots[i].x;
+        const ky = geo.cy + slots[i].y;
 
         const x = lerp(ox, kx, m);
         const y = lerp(oy, ky, m);
@@ -161,6 +163,7 @@ export default function OrbitSystem({
       className="orbit-system absolute inset-0"
       data-highlight={highlight !== null || undefined}
       data-hole={hole || undefined}
+      data-compact={geo.portrait || undefined}
       style={{ "--card-w": `${geo.cardW}px` } as CSSProperties}
     >
       {stars && (
@@ -199,22 +202,31 @@ export default function OrbitSystem({
             ))}
           </svg>
 
+          {/*
+            Camadas do buraco negro, de trás para a frente: halo de luz curvada pela gravidade,
+            disco de acreção, sombra (o próprio sol apagado), metade da frente do disco e a onda de choque.
+          */}
           <button
             type="button"
             className="sun"
             data-hole={hole || undefined}
+            data-hint={hint || undefined}
             style={{ width: geo.sun, height: geo.sun, left: geo.cx, top: geo.cy }}
             onClick={() => setHole((h) => !h)}
             aria-pressed={hole}
-            aria-label={hole ? t.orbit.sunClose : t.orbit.sunOpen}
+            aria-label={hole ? t.orbit.sunBack : t.orbit.sunOpen}
           >
-            <span className="sun-ring" aria-hidden="true" />
+            <span className="sun-ping" aria-hidden="true" />
+            <span className="bh-lens" aria-hidden="true" />
+            <span className="bh-disk" aria-hidden="true" />
             <span className="sun-disk" aria-hidden="true">
               <EEMark className="sun-mark" />
             </span>
-            <span className="sun-ring sun-ring-front" aria-hidden="true" />
+            <span className="bh-disk bh-disk-front" aria-hidden="true" />
+            <span className="bh-shock" aria-hidden="true" />
             <span className="sun-caption label" aria-hidden="true">
-              {hole ? t.orbit.sunClose : t.orbit.sunHint}
+              <span className="pointer-coarse:hidden">{hole ? t.orbit.sunClose : t.orbit.sunHint}</span>
+              <span className="hidden pointer-coarse:inline">{hole ? t.orbit.sunCloseTouch : t.orbit.sunHintTouch}</span>
             </span>
           </button>
 

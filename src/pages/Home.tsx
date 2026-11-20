@@ -117,6 +117,7 @@ export default function Home() {
               active={activeIdx}
               spin={progress}
               labels={!tour.on}
+              hint={tour.on}
               onSelect={openFeatured}
               onHoleChange={setHoleOpen}
             />
