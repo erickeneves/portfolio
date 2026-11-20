@@ -15,5 +15,5 @@ export const site = {
    * Currículo em PDF por idioma. Coloque os arquivos em public/cv e informe o caminho,
    * por exemplo "/cv/erick-neves-pt.pdf". Com null, o botão de currículo não aparece.
    */
-  cv: { pt: null, en: null } as Record<Lang, string | null>,
+  cv: { pt: "/cv/erick-neves-curriculo.pdf", en: "/cv/erick-neves-resume.pdf" } as Record<Lang, string | null>,
 };
